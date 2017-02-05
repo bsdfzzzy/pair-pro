@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,7 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,7 +43,7 @@ public class TodoControllerTest {
 
     @Test
     public void should_return_one_todo_item() throws Exception {
-        mockMvc.perform(get("/todos/1").contentType(APPLICATION_JSON))
+        mockMvc.perform(get("/todos/2").contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
     }
@@ -56,5 +55,17 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.title", is("newTodo")));
     }
 
+    @Test
+    public void should_return_todo_item_after_patch() throws Exception {
+        mockMvc.perform(patch("/todos/2").contentType(APPLICATION_JSON).param("title", "hehehe"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("hehehe")));
+    }
 
+    @Test
+    public void should_return_message_delete_success() throws Exception {
+        mockMvc.perform(delete("/todos/2").contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", is("successfully removed the item")));
+    }
 }
