@@ -1,5 +1,4 @@
 .gitignore
-src/main/resources/
 target/classes/
 target/generated-sources/
 .idea
