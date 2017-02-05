@@ -1,0 +1,197 @@
+#%RAML 0.8
+title: todo-api
+baseUri: http://localhost:8080
+version: 0.1
+
+/todos:
+  /{id}:
+    uriParameters:
+      id:
+        type: integer
+        required: true
+    patch:
+      description: update an existing item for updating title or marking it completed
+      body:
+        application/json:
+          schema: TodoUpdateRequest
+      responses:
+        200:
+          body:
+            application/json:
+              schema: TodoItem
+        400:
+          description: invalid title, for example, empty or null
+          body:
+            application/json:
+              schema: Message
+              example: |-
+                {
+                  "message": "bad title, it shouldn't be empty or null."
+                }
+        404:
+          description: can't find the item by given id
+          body:
+            application/json:
+              schema: Message
+              example: |-
+                {
+                  "message": "can't find the todo item"
+                }
+    delete:
+      description: remove an existing item
+      responses:
+        200:
+          description: successfully removed an item
+          body:
+            application/json:
+              schema: Message
+              example: |-
+                {
+                  "message": "successfully removed the item"
+                }
+        404:
+          description: can't find the item by given id
+          body:
+            application/json:
+              schema: Message
+              example: |-
+                {
+                  "message": "can't find the item"
+                }
+  get:
+    description: return a list of all todo items
+    responses:
+      200:
+        body:
+          application/json:
+            schema: TodoItemList
+  post:
+    description: create a new todo item
+    body:
+      application/json:
+        schema: TodoCreationRequest
+        example: |-
+          {
+            "title": "a new todo item"
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            schema: TodoItem
+      400:
+        description: invalid title, for example, empty or null
+        body:
+          application/json:
+            schema: Message
+            example: |-
+              {
+                "message": "bad title, it shouldn't be empty or null."
+              }
+
+schemas:
+  - TodoItem: |-
+      {
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "required": true
+          },
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "completed": {
+            "type": "boolean",
+            "required": true
+          },
+          "created_at": {
+            "type": "string",
+            "required": true
+          },
+          "updated_at": {
+            "type": "string",
+            "required": true
+          }
+        },
+        "example": {
+          "id": 1,
+          "title": "title",
+          "completed": false,
+          "created_at": "2016-01-01 01:00:00",
+          "updated_at": "2016-01-01 01:00:00"
+        }
+      }
+  - TodoItemList: |-
+      {
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "type": "array",
+        "items": {
+          "type": "TodoItem"
+        },
+        "example":[
+          {
+            "id": 1,
+            "title": "title",
+            "completed": false,
+            "created_at": "2016-01-01 01:00:00",
+            "updated_at": "2016-01-01 01:00:00"
+          },
+          {
+            "id": 2,
+            "title": "another title",
+            "completed": true,
+            "created_at": "2016-01-01 01:00:00",
+            "updated_at": "2016-01-01 01:00:00"
+          }
+        ]
+      }
+  - TodoCreationRequest: |-
+      {
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "example": {
+            "title": "a new todo item title"
+          }
+        }
+      }
+  - Message: |-
+      {
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "required": true
+          },
+          "example": {
+            "message": "this is a message from backend"
+          }
+        }
+      }
+  - TodoUpdateRequest: |-
+      {
+        "$schema": "http://json-schema.org/draft-03/schema",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": false
+          },
+          "completed": {
+            "type": "boolean",
+            "required": false
+          }
+        },
+        "example": {
+          "title": "update title",
+          "completed": true
+        }
+      }
