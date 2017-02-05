@@ -3,3 +3,4 @@ target/classes/
 target/generated-sources/
 .idea
 demoblog.iml
+/src/test/java/com/pair/controller/TodoControllerTest.java
