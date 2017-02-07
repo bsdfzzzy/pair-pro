@@ -51,7 +51,13 @@ public class TodoController {
     public ResponseEntity<Object> updateTodo(@RequestParam("title") String title, @RequestParam(value = "completed", required = false) String completed, @PathVariable int id) {
         Map<String, String> json = new HashMap<String, String>();
         Todo todo = todoRepository.findOne((long) id);
-        if (title != "" && title != null) {
+
+        if (todo == null) {
+            json.put("message", "bad id,can't find the todo item");
+            return new ResponseEntity<Object>(json, HttpStatus.NOT_FOUND);
+        }
+
+        if (title != "" && title != null && todo != null) {
             todo.setTitle(title);
             if (completed != null) {
                 if (completed == "false") {
@@ -66,15 +72,20 @@ public class TodoController {
             json.put("message", "bad title, it shouldn't be empty or null.");
             return new ResponseEntity<Object>(json, HttpStatus.BAD_REQUEST);
         }
-//        if (!have) {
-//            json.put("message", "can't find the todo item");
-//            return new ResponseEntity<Object>(json, HttpStatus.NOT_FOUND);
-//        }
+
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> deleteTodoItem(@PathVariable int id) {
         Map<String, String> json = new HashMap<String, String>();
+
+        Todo todo = todoRepository.findOne((long) id);
+
+        if (todo == null) {
+            json.put("message", "bad id,can't find the todo item to delete");
+            return new ResponseEntity<Object>(json, HttpStatus.NOT_FOUND);
+        }
+
         todoRepository.delete((long) id);
         json.put("message", "successfully removed the item");
         return new ResponseEntity<Object>(json, HttpStatus.OK);
